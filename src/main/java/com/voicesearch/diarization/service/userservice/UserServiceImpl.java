@@ -5,13 +5,16 @@ import com.voicesearch.diarization.dto.ResultDto;
 import com.voicesearch.diarization.dto.UserEnrollDto;
 import com.voicesearch.diarization.model.UserEnroll;
 import com.voicesearch.diarization.repository.UserRepository;
+import com.voicesearch.diarization.util.recognito.MatchResult;
 import com.voicesearch.diarization.util.recognito.Recognito;
 import com.voicesearch.diarization.util.recognito.VoicePrint;
 import org.springframework.stereotype.Service;
 
 import javax.sound.sampled.UnsupportedAudioFileException;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.List;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -27,9 +30,21 @@ public class UserServiceImpl implements UserService {
 
         ResultDto result = new ResultDto();
 
-        Recognito<String> recognito = new Recognito<String>(16000.0f);
+        Recognito<String> recognito = new Recognito<String>(48000.0f);
 
-        VoicePrint print = recognito.createVoicePrint(userEnrollDto.getUserName(), new File(String.valueOf(userEnrollDto.getVoiceSample())));
+        File wavAudioFile = new File("VoiceSample.wav");
+        try
+        {
+            FileOutputStream os = new FileOutputStream(wavAudioFile, true);
+            os.write(userEnrollDto.getVoiceSample());
+            os.close();
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+
+        VoicePrint print = recognito.createVoicePrint(userEnrollDto.getUserName(), wavAudioFile);
 
         UserEnroll dbUserModel = new UserEnroll();
         dbUserModel.setUserName(userEnrollDto.getUserName());
@@ -40,6 +55,8 @@ public class UserServiceImpl implements UserService {
         if(savedUser != null){
             result.setSuccess(true);
             result.setMessage("Sikeres mentés!");
+            wavAudioFile.delete();
+
         } else {
             result.setSuccess(false);
             result.setMessage("Sikertelen mentés");
@@ -49,14 +66,22 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public ResultDto recogniseUser(RecognitionDto recognitionDto) {
+    public ResultDto recogniseUser(RecognitionDto recognitionDto) throws UnsupportedAudioFileException, IOException {
 
         ResultDto result = new ResultDto();
-
-        UserEnroll voiceAssistant = userRepository.getByUserName(recognitionDto.getVoiceAssistantName());
 
         Recognito<String> recognito = new Recognito(16000.0f);
 
         return null;
+    }
+
+    private static double[] toDoubleArray(byte[] byteArray){
+        double[] doubles = new double[byteArray.length / 3];
+        for (int i = 0, j = 0; i != doubles.length; ++i, j += 3) {
+            doubles[i] = (double)( (byteArray[j  ] & 0xff) |
+                    ((byteArray[j+1] & 0xff) <<  8) |
+                    ( byteArray[j+2]         << 16));
+        }
+        return doubles;
     }
 }

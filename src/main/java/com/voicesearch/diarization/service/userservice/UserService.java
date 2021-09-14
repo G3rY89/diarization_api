@@ -9,5 +9,5 @@ import java.io.IOException;
 
 public interface UserService {
     ResultDto enrollUser(UserEnrollDto userEnrollDto) throws UnsupportedAudioFileException, IOException;
-    ResultDto recogniseUser(RecognitionDto recognitionDto);
+    ResultDto recogniseUser(RecognitionDto recognitionDto) throws UnsupportedAudioFileException, IOException;
 }
