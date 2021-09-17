@@ -14,7 +14,10 @@ import javax.sound.sampled.UnsupportedAudioFileException;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -69,10 +72,45 @@ public class UserServiceImpl implements UserService {
     public ResultDto recogniseUser(RecognitionDto recognitionDto) throws UnsupportedAudioFileException, IOException {
 
         ResultDto result = new ResultDto();
+        result.setSuccess(false);
 
-        Recognito<String> recognito = new Recognito(16000.0f);
+        Recognito<String> recognito = new Recognito(48000.0f);
 
-        return null;
+        File voiceToBeIdentified = new File("VoiceToBeIdentified.wav");
+        try
+        {
+            FileOutputStream os = new FileOutputStream(voiceToBeIdentified, true);
+            os.write(recognitionDto.getVoiceSampleToBeIdentified());
+            os.close();
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+
+        List<UserEnroll> storedUsers = userRepository.findAll();
+
+        Map<String, VoicePrint> storedVoicePrints = new HashMap<String, VoicePrint>();
+
+        for(UserEnroll storedUser : storedUsers){
+            String[] res = storedUser.getVoiceSample().substring(1, storedUser.getVoiceSample().length() - 1).split(",");
+            VoicePrint vp = new VoicePrint(Arrays.stream(res).mapToDouble(Double::parseDouble).toArray());
+            storedVoicePrints.put(storedUser.getUserName(), vp);
+        }
+
+        List<MatchResult<String>> matches = recognito.identify(voiceToBeIdentified, recognitionDto.getVoiceAssistantName(), storedVoicePrints);
+        MatchResult<String> match = matches.get(0);
+
+        if(match.getKey().equals(recognitionDto.getVoiceAssistantName())) {
+            result.setSuccess(true);
+            result.setMessage("Stored voice is matching with the uploaded voice");
+        } else {
+            result.setSuccess(true);
+            result.setMessage("Stored voice is not matching with the uploaded voice");
+        }
+        voiceToBeIdentified.delete();
+
+        return result;
     }
 
     private static double[] toDoubleArray(byte[] byteArray){

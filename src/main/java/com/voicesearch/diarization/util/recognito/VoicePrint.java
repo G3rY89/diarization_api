@@ -50,7 +50,7 @@ public final class VoicePrint
      * Contructor for a voice print
      * @param features the features
      */
-    VoicePrint(double[] features) {
+    public VoicePrint(double[] features) {
         super();
         this.features = features;
         this.meanCount = 1;

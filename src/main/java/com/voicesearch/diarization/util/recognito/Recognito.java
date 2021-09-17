@@ -294,29 +294,33 @@ public class Recognito<K> {
      * @param voiceSample the voice sample, values between -1.0 and 1.0
      * @return a list MatchResults sorted by distance
      */
-    public List<MatchResult<K>> identify(double[] voiceSample) {
+    public List<MatchResult<String>> identify(double[] voiceSample, String storedName, Map<String, VoicePrint> storedVoicePrints) {
         
-        if(store.isEmpty()) {
+        if(storedVoicePrints.isEmpty()) {
             throw new IllegalStateException("There is no voice print enrolled in the system yet");
+        }
+
+        if(universalModel == null){
+            universalModel = storedVoicePrints.get("Mate");
         }
 
         VoicePrint voicePrint = new VoicePrint(extractFeatures(voiceSample, sampleRate));
         
         DistanceCalculator calculator = new EuclideanDistanceCalculator();
-        List<MatchResult<K>> matches = new ArrayList<MatchResult<K>>(store.size());
+        List<MatchResult<String>> matches = new ArrayList<MatchResult<String>>(storedVoicePrints.size());
 
         double distanceFromUniversalModel = voicePrint.getDistance(calculator, universalModel);
-        for (Entry<K, VoicePrint> entry : store.entrySet()) {
+        for (Entry<String, VoicePrint> entry : storedVoicePrints.entrySet()) {
             double distance = entry.getValue().getDistance(calculator, voicePrint);
             // likelihood : how close is the given voice sample to the current VoicePrint 
             // compared to the total distance between the current VoicePrint and the universal model 
             int likelihood = 100 - (int) (distance / (distance + distanceFromUniversalModel) * 100);
-            matches.add(new MatchResult<K>(entry.getKey(), likelihood, distance));
+            matches.add(new MatchResult<String>(entry.getKey(), likelihood, distance));
         }
 
-        Collections.sort(matches, new Comparator<MatchResult<K>>() {
+        Collections.sort(matches, new Comparator<MatchResult<String>>() {
             @Override
-            public int compare(MatchResult<K> m1, MatchResult<K> m2) {
+            public int compare(MatchResult<String> m1, MatchResult<String> m2) {
                 return Double.compare(m1.getDistance(), m2.getDistance());
             }
         });
@@ -334,12 +338,12 @@ public class Recognito<K> {
      * @throws UnsupportedAudioFileException when the JVM does not support the audio file format
      * @throws IOException when an I/O exception occurs
      */
-    public  List<MatchResult<K>> identify(File voiceSampleFile) 
+    public  List<MatchResult<String>> identify(File voiceSampleFile, String storedName, Map<String, VoicePrint> storedVoicePrints)
             throws UnsupportedAudioFileException, IOException {
         
         double[] audioSample = convertFileToDoubleArray(voiceSampleFile);
 
-        return identify(audioSample);
+        return identify(audioSample, storedName, storedVoicePrints);
     }
   
     /**

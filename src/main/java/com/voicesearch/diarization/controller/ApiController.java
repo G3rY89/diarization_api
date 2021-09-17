@@ -4,6 +4,7 @@ import com.voicesearch.diarization.dto.RecognitionDto;
 import com.voicesearch.diarization.dto.ResultDto;
 import com.voicesearch.diarization.dto.UserEnrollDto;
 import com.voicesearch.diarization.service.userservice.UserServiceImpl;
+import org.hibernate.engine.query.spi.ParameterParser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import sun.misc.IOUtils;
@@ -19,7 +20,7 @@ public class ApiController {
     UserServiceImpl userService;
 
     @PostMapping(value= "/enroll")
-    public ResultDto enrollUser(HttpServletRequest requestEntity, @RequestHeader("userName") String userName) throws UnsupportedAudioFileException, IOException {
+    public ResultDto enrollUser(HttpServletRequest requestEntity, @RequestHeader("UserName") String userName) throws UnsupportedAudioFileException, IOException {
         UserEnrollDto userEnrollDto = new UserEnrollDto();
         userEnrollDto.setUserName(userName);
 
@@ -30,7 +31,13 @@ public class ApiController {
     }
 
     @PostMapping(value= "/recognize")
-    public ResultDto recogniseVoice(RecognitionDto recognitionDto) throws UnsupportedAudioFileException, IOException {
+    public ResultDto recogniseVoice(HttpServletRequest requestEntity, @RequestHeader("VoiceAssistantName") String voiceAssistantName) throws UnsupportedAudioFileException, IOException {
+        RecognitionDto recognitionDto = new RecognitionDto();
+
+        recognitionDto.setVoiceAssistantName(voiceAssistantName);
+        byte[] voiceSample = IOUtils.readAllBytes(requestEntity.getInputStream());
+        recognitionDto.setVoiceSampleToBeIdentified(voiceSample);
+
         return userService.recogniseUser(recognitionDto);
     }
 }
