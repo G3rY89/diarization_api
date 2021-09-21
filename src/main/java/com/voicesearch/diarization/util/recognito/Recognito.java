@@ -18,12 +18,7 @@ package com.voicesearch.diarization.util.recognito;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -242,7 +237,7 @@ public class Recognito<K> {
      * @param voiceSample the voice sample to analyze, values between -1.0 and 1.0
      * @return the updated voice print
      */
-    public VoicePrint mergeVoiceSample(K userKey, double[] voiceSample) {
+    public VoicePrint mergeVoiceSample(String userKey, double[] voiceSample) {
         
         if(userKey == null) {
             throw new NullPointerException("The userKey is null");
@@ -275,7 +270,7 @@ public class Recognito<K> {
      * @throws UnsupportedAudioFileException when the JVM does not support the file format
      * @throws IOException when an I/O exception occurs
      */
-    public VoicePrint mergeVoiceSample(K userKey, File voiceSampleFile) 
+    public VoicePrint mergeVoiceSample(String userKey, File voiceSampleFile)
             throws UnsupportedAudioFileException, IOException {
         
         double[] audioSample = convertFileToDoubleArray(voiceSampleFile);
@@ -300,8 +295,12 @@ public class Recognito<K> {
             throw new IllegalStateException("There is no voice print enrolled in the system yet");
         }
 
-        if(universalModel == null){
-            universalModel = storedVoicePrints.get("Mate");
+        if(store == null){
+            store.p = storedVoicePrints.get("Mate");
+        }
+
+        for (Entry<String, VoicePrint> entry : storedVoicePrints.entrySet()) {
+            this.mergeVoiceSample(entry.getKey(), entry.getValue().features);
         }
 
         VoicePrint voicePrint = new VoicePrint(extractFeatures(voiceSample, sampleRate));

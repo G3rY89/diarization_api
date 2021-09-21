@@ -37,7 +37,7 @@ public final class VoicePrint
     private final Lock r = rwl.readLock();
     private final Lock w = rwl.writeLock();
     
-    private double[] features;
+    public double[] features;
     private int meanCount;
 
     
