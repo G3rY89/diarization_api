@@ -296,7 +296,6 @@ public class Recognito<K> {
         }
 
         for (Entry<String, VoicePrint> entry : storedVoicePrints.entrySet()) {
-            store.put(entry.getKey(), entry.getValue());
             this.mergeVoiceSample(entry.getKey(), entry.getValue().features);
         }
 
