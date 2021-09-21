@@ -4,6 +4,7 @@ import com.voicesearch.diarization.dto.RecognitionDto;
 import com.voicesearch.diarization.dto.ResultDto;
 import com.voicesearch.diarization.dto.UserEnrollDto;
 import com.voicesearch.diarization.service.userservice.UserServiceImpl;
+import com.voicesearch.diarization.util.recognito.MatchResult;
 import org.hibernate.engine.query.spi.ParameterParser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -31,7 +32,7 @@ public class ApiController {
     }
 
     @PostMapping(value= "/recognize")
-    public ResultDto recogniseVoice(HttpServletRequest requestEntity, @RequestHeader("VoiceAssistantName") String voiceAssistantName) throws UnsupportedAudioFileException, IOException {
+    public MatchResult<String> recogniseVoice(HttpServletRequest requestEntity, @RequestHeader("VoiceAssistantName") String voiceAssistantName) throws UnsupportedAudioFileException, IOException {
         RecognitionDto recognitionDto = new RecognitionDto();
 
         recognitionDto.setVoiceAssistantName(voiceAssistantName);

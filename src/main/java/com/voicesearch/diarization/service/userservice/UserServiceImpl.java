@@ -69,12 +69,9 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public ResultDto recogniseUser(RecognitionDto recognitionDto) throws UnsupportedAudioFileException, IOException {
+    public MatchResult<String> recogniseUser(RecognitionDto recognitionDto) throws UnsupportedAudioFileException, IOException {
 
-        ResultDto result = new ResultDto();
-        result.setSuccess(false);
 
-        Recognito<String> recognito = new Recognito(48000.0f);
 
         File voiceToBeIdentified = new File("VoiceToBeIdentified.wav");
         try
@@ -92,25 +89,20 @@ public class UserServiceImpl implements UserService {
 
         Map<String, VoicePrint> storedVoicePrints = new HashMap<String, VoicePrint>();
 
+        int i = 0;
         for(UserEnroll storedUser : storedUsers){
             String[] res = storedUser.getVoiceSample().substring(1, storedUser.getVoiceSample().length() - 1).split(",");
             VoicePrint vp = new VoicePrint(Arrays.stream(res).mapToDouble(Double::parseDouble).toArray());
-            storedVoicePrints.put(storedUser.getUserName(), vp);
+            storedVoicePrints.put(storedUser.getUserName() + i, vp);
+            i++;
         }
-
+        Recognito<String> recognito = new Recognito(48000.0f, storedVoicePrints);
         List<MatchResult<String>> matches = recognito.identify(voiceToBeIdentified, recognitionDto.getVoiceAssistantName(), storedVoicePrints);
         MatchResult<String> match = matches.get(0);
 
-        if(match.getKey().equals(recognitionDto.getVoiceAssistantName())) {
-            result.setSuccess(true);
-            result.setMessage("Stored voice is matching with the uploaded voice");
-        } else {
-            result.setSuccess(true);
-            result.setMessage("Stored voice is not matching with the uploaded voice");
-        }
         voiceToBeIdentified.delete();
 
-        return result;
+        return match;
     }
 
     private static double[] toDoubleArray(byte[] byteArray){

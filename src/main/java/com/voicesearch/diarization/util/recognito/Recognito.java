@@ -97,7 +97,7 @@ public class Recognito<K> {
 
     private static final float MIN_SAMPLE_RATE = 8000.0f;
     
-    private final ConcurrentHashMap<K, VoicePrint> store = new ConcurrentHashMap<K, VoicePrint>();
+    private final ConcurrentHashMap<String, VoicePrint> store = new ConcurrentHashMap<String, VoicePrint>();
     private final float sampleRate;
 
     private final AtomicBoolean universalModelWasSetByUser = new AtomicBoolean();
@@ -120,7 +120,7 @@ public class Recognito<K> {
      * @param sampleRate the sample rate, at least 8000.0 Hz (preferably higher)
      * @param voicePrintsByUserKey a {@code Map} containing user keys and their respective {@code VoicePrint}
      */
-    public Recognito(float sampleRate, Map<K, VoicePrint> voicePrintsByUserKey) {
+    public Recognito(float sampleRate, Map<String, VoicePrint> voicePrintsByUserKey) {
         this(sampleRate);
         Iterator<VoicePrint> it = voicePrintsByUserKey.values().iterator();
         if (it.hasNext()) {
@@ -163,7 +163,7 @@ public class Recognito<K> {
      * @param voiceSample the voice sample, values between -1.0 and 1.0
      * @return the voice print extracted from the given sample
      */
-    public synchronized VoicePrint createVoicePrint(K userKey, double[] voiceSample) {
+    public synchronized VoicePrint createVoicePrint(String userKey, double[] voiceSample) {
         if(userKey == null) {
             throw new NullPointerException("The userKey is null");
         }
@@ -199,7 +199,7 @@ public class Recognito<K> {
      * @throws UnsupportedAudioFileException when the JVM does not support the file format
      * @throws IOException when an I/O exception occurs
      */
-    public VoicePrint createVoicePrint(K userKey, File voiceSampleFile) 
+    public VoicePrint createVoicePrint(String userKey, File voiceSampleFile)
             throws UnsupportedAudioFileException, IOException {
         
         double[] audioSample = convertFileToDoubleArray(voiceSampleFile);
@@ -295,11 +295,8 @@ public class Recognito<K> {
             throw new IllegalStateException("There is no voice print enrolled in the system yet");
         }
 
-        if(store == null){
-            store.p = storedVoicePrints.get("Mate");
-        }
-
         for (Entry<String, VoicePrint> entry : storedVoicePrints.entrySet()) {
+            store.put(entry.getKey(), entry.getValue());
             this.mergeVoiceSample(entry.getKey(), entry.getValue().features);
         }
 
