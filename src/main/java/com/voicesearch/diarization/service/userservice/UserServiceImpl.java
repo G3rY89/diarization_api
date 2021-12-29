@@ -10,8 +10,9 @@ import com.voicesearch.diarization.util.recognito.Recognito;
 import com.voicesearch.diarization.util.recognito.VoicePrint;
 import org.springframework.stereotype.Service;
 
-import javax.sound.sampled.UnsupportedAudioFileException;
+import javax.sound.sampled.*;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Arrays;
@@ -71,14 +72,21 @@ public class UserServiceImpl implements UserService {
     @Override
     public MatchResult<String> recogniseUser(RecognitionDto recognitionDto) throws UnsupportedAudioFileException, IOException {
 
-
-
-        File voiceToBeIdentified = new File("VoiceToBeIdentified.wav");
+        File rawAudioFile = new File("temp.tmp");
+        File voiceToBeIdentified = new File("voiceToBeIdentidied.wav");
         try
         {
             FileOutputStream os = new FileOutputStream(voiceToBeIdentified, true);
             os.write(recognitionDto.getVoiceSampleToBeIdentified());
             os.close();
+
+            AudioFormat af = new AudioFormat(44100, 8, 2,true, false);
+
+            long l = rawAudioFile.length();
+            FileInputStream fi = new FileInputStream(rawAudioFile);
+            AudioInputStream ai = new AudioInputStream(fi, af,l/4);
+            AudioSystem.write(ai, AudioFileFormat.Type.WAVE, voiceToBeIdentified);
+            fi.close();
         }
         catch (Exception e)
         {

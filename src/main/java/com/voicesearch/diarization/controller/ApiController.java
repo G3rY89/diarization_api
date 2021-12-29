@@ -21,7 +21,7 @@ public class ApiController {
     UserServiceImpl userService;
 
     @PostMapping(value= "/enroll")
-    @CrossOrigin(origins = "https://www.jotipp.hu")
+    @CrossOrigin(origins = "https://localhost")
     public ResultDto enrollUser(HttpServletRequest requestEntity, @RequestHeader("UserName") String userName) throws UnsupportedAudioFileException, IOException {
         UserEnrollDto userEnrollDto = new UserEnrollDto();
         userEnrollDto.setUserName(userName);
@@ -33,7 +33,7 @@ public class ApiController {
     }
 
     @PostMapping(value= "/recognize")
-    @CrossOrigin(origins = "https://www.jotipp.hu")
+    @CrossOrigin(origins = "https://localhost")
     public MatchResult<String> recogniseVoice(HttpServletRequest requestEntity, @RequestHeader("VoiceAssistantName") String voiceAssistantName) throws UnsupportedAudioFileException, IOException {
         RecognitionDto recognitionDto = new RecognitionDto();
 

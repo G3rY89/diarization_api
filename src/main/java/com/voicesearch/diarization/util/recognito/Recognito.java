@@ -335,7 +335,7 @@ public class Recognito<K> {
      */
     public  List<MatchResult<String>> identify(File voiceSampleFile, String storedName, Map<String, VoicePrint> storedVoicePrints)
             throws UnsupportedAudioFileException, IOException {
-        
+
         double[] audioSample = convertFileToDoubleArray(voiceSampleFile);
 
         return identify(audioSample, storedName, storedVoicePrints);
