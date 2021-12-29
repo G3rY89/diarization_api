@@ -80,7 +80,7 @@ public class UserServiceImpl implements UserService {
             os.write(recognitionDto.getVoiceSampleToBeIdentified());
             os.close();
 
-            AudioFormat af = new AudioFormat(AudioFormat.Encoding.PCM_SIGNED, 44.1, 2,true, );
+            AudioFormat af = new AudioFormat(44100, 8, 2,true, false);
 
             long l = rawAudioFile.length();
             FileInputStream fi = new FileInputStream(rawAudioFile);
