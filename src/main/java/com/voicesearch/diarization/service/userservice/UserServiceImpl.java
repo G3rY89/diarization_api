@@ -1,5 +1,6 @@
 package com.voicesearch.diarization.service.userservice;
 
+import com.sun.media.sound.WaveFileWriter;
 import com.voicesearch.diarization.dto.RecognitionDto;
 import com.voicesearch.diarization.dto.ResultDto;
 import com.voicesearch.diarization.dto.UserEnrollDto;
@@ -8,13 +9,11 @@ import com.voicesearch.diarization.repository.UserRepository;
 import com.voicesearch.diarization.util.recognito.MatchResult;
 import com.voicesearch.diarization.util.recognito.Recognito;
 import com.voicesearch.diarization.util.recognito.VoicePrint;
+import com.voicesearch.diarization.util.wav.Wav;
 import org.springframework.stereotype.Service;
 
 import javax.sound.sampled.*;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -72,26 +71,14 @@ public class UserServiceImpl implements UserService {
     @Override
     public MatchResult<String> recogniseUser(RecognitionDto recognitionDto) throws UnsupportedAudioFileException, IOException {
 
-        File rawAudioFile = new File("temp.tmp");
         File voiceToBeIdentified = new File("voiceToBeIdentidied.wav");
-        try
-        {
-            FileOutputStream os = new FileOutputStream(voiceToBeIdentified, true);
-            os.write(recognitionDto.getVoiceSampleToBeIdentified());
-            os.close();
+        Wav wavWriter = new Wav(voiceToBeIdentified.getPath());
+        FileOutputStream fos = new FileOutputStream(voiceToBeIdentified);
+        fos.write(recognitionDto.getVoiceSampleToBeIdentified());
+        fos.close();
+        wavWriter.read();
+        wavWriter.save();
 
-            AudioFormat af = new AudioFormat(44100, 8, 2,true, false);
-
-            long l = rawAudioFile.length();
-            FileInputStream fi = new FileInputStream(rawAudioFile);
-            AudioInputStream ai = new AudioInputStream(fi, af,l/4);
-            AudioSystem.write(ai, AudioFileFormat.Type.WAVE, voiceToBeIdentified);
-            fi.close();
-        }
-        catch (Exception e)
-        {
-            e.printStackTrace();
-        }
 
         List<UserEnroll> storedUsers = userRepository.findAll();
 
