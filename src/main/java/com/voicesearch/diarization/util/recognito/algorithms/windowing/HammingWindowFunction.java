@@ -24,7 +24,6 @@ import java.util.Map;
  * <p>
  * Threading : this class is thread safe
  * </p>
- * @see <a href="http://en.wikipedia.org/wiki/Window_function#Hamming_window">Hamming window<a/>
  * @see WindowFunction
  * @author Amaury Crickx
  */

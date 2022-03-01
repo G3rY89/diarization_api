@@ -20,7 +20,6 @@ package com.voicesearch.diarization.util.recognito.features;
  * Base class for windowed features extractor
  * <p>
  * Constructor computes default window size by calling {@link #getWindowSize(float)}. <br/>
- * @see {@link #getWindowSize(float)}
  * </p>
  * @author Amaury Crickx
  * @param <T> the kind of features to extract, specified by implementing classes

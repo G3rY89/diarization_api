@@ -91,7 +91,6 @@ import com.voicesearch.diarization.util.recognito.vad.AutocorrellatedVoiceActivi
  * @param <K> {@code Recognito} is genericized in order to allow the user to specify its own type of user keys.
  * The constraints on user keys are the same as those for a {@code java.util.Map} key 
  * @author Amaury Crickx
- * @see {@link java.util.Map} for the constraints on Key objects
  */
 public class Recognito<K> {
 

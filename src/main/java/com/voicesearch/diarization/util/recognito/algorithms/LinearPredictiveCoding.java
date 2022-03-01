@@ -29,7 +29,6 @@ import java.util.Arrays;
  * <p>
  * Threading : this class is _NOT_ thread safe
  * </p>
- * @see <a href="http://en.wikipedia.org/wiki/Linear_predictive_coding"><a/>
  * @author Amaury Crickx
  */
 public class LinearPredictiveCoding {

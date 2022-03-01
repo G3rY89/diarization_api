@@ -6,6 +6,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 @Repository
 public interface UserRepository extends JpaRepository<UserEnroll, Integer>{
-
     UserEnroll getByUserName(String userName);
 }

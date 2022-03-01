@@ -20,8 +20,6 @@ package com.voicesearch.diarization.util.recognito.algorithms.windowing;
 /**
  * Base implementation for the WindowFunction types
  * 
- * @see <a href="http://en.wikipedia.org/wiki/Window_function">Window Function<a/>
- * @see <a href="http://www.utdallas.edu/~cpb021000/EE%204361/Great%20DSP%20Papers/Harris%20on%20Windows.pdf">Harris on windows<a/>
  * @author Amaury Crickx
  */
 public abstract class WindowFunction {
