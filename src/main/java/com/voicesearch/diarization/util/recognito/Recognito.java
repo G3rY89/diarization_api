@@ -350,11 +350,9 @@ public class Recognito<K> {
     private double[] extractFeatures(double[] voiceSample, float sampleRate) {
 
         AutocorrellatedVoiceActivityDetector voiceDetector = new AutocorrellatedVoiceActivityDetector();
-        Normalizer normalizer = new Normalizer();
         FeaturesExtractor<double[]> lpcExtractor = new LpcFeaturesExtractor(sampleRate, 20);
 
         voiceDetector.removeSilence(voiceSample, sampleRate);
-        normalizer.normalize(voiceSample, sampleRate);
         double[] lpcFeatures = lpcExtractor.extractFeatures(voiceSample);
 
         return lpcFeatures;

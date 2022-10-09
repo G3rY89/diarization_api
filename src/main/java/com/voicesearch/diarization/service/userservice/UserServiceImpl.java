@@ -1,6 +1,5 @@
 package com.voicesearch.diarization.service.userservice;
 
-import com.sun.media.sound.WaveFileWriter;
 import com.voicesearch.diarization.dto.RecognitionDto;
 import com.voicesearch.diarization.dto.ResultDto;
 import com.voicesearch.diarization.dto.UserEnrollDto;
@@ -33,7 +32,7 @@ public class UserServiceImpl implements UserService {
 
         ResultDto result = new ResultDto();
 
-        Recognito<String> recognito = new Recognito<String>(48000.0f);
+        Recognito<String> recognito = new Recognito<String>(24000.0f);
 
         File wavAudioFile = new File("VoiceSample.wav");
         try
@@ -91,7 +90,7 @@ public class UserServiceImpl implements UserService {
             storedVoicePrints.put(storedUser.getUserName() + i, vp);
             i++;
         }
-        Recognito<String> recognito = new Recognito(48000.0f, storedVoicePrints);
+        Recognito<String> recognito = new Recognito(44100.0f, storedVoicePrints);
         List<MatchResult<String>> matches = recognito.identify(voiceToBeIdentified, recognitionDto.getVoiceAssistantName(), storedVoicePrints);
         MatchResult<String> match = matches.get(0);
 
